@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.11)", // ✅ semi-transparent overlay
+    backgroundColor: "rgba(255, 255, 255, 0.11)",
     paddingHorizontal: isTablet ? 60 : isSmall ? 16 : 24,
     justifyContent: "center",
   },
