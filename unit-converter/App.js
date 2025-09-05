@@ -8,6 +8,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  ImageBackground,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
@@ -57,64 +58,75 @@ export default function App() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.outerContainer}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <ImageBackground
+      source={require("./assets/bg.jpeg")} // ✅ your background image
+      style={styles.background}
+      resizeMode="cover"
     >
-      <Text style={styles.appTitle}>Ultimate Unit Converter</Text>
+      <KeyboardAvoidingView
+        style={styles.overlay}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <Text style={styles.appTitle}>Ultimate Unit Converter</Text>
 
-      <View style={styles.card}>
-        {/* Input */}
-        <TextInput
-          style={styles.input}
-          placeholder="Enter value..."
-          placeholderTextColor="#8ca4af"
-          keyboardType="numeric"
-          value={value}
-          onChangeText={setValue}
-        />
+        <View style={styles.card}>
+          {/* Input */}
+          <TextInput
+            style={styles.input}
+            placeholder="Enter value..."
+            placeholderTextColor="#8ca4af"
+            keyboardType="numeric"
+            value={value}
+            onChangeText={setValue}
+          />
 
-        {/* Picker */}
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={unit}
-            style={styles.picker}
-            onValueChange={(itemValue) => setUnit(itemValue)}
-          >
-            {Object.keys(conversions).map((key) => (
-              <Picker.Item key={key} label={key} value={key} />
-            ))}
-          </Picker>
+          {/* Picker */}
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={unit}
+              style={styles.picker}
+              onValueChange={(itemValue) => setUnit(itemValue)}
+            >
+              {Object.keys(conversions).map((key) => (
+                <Picker.Item key={key} label={key} value={key} />
+              ))}
+            </Picker>
+          </View>
+
+          {/* Convert Button */}
+          <TouchableOpacity style={styles.convertBtn} onPress={convert}>
+            <Text style={styles.convertBtnText}>Convert Now</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Convert Button */}
-        <TouchableOpacity style={styles.convertBtn} onPress={convert}>
-          <Text style={styles.convertBtnText}>Convert Now</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Result */}
-      {result && (
-        <View style={styles.resultBox}>
-          <Text style={styles.resultLabel}>Result</Text>
-          <Text style={styles.resultValue}>{result}</Text>
-        </View>
-      )}
-    </KeyboardAvoidingView>
+        {/* Result */}
+        {result && (
+          <View style={styles.resultBox}>
+            <Text style={styles.resultLabel}>Result</Text>
+            <Text style={styles.resultValue}>{result}</Text>
+          </View>
+        )}
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  outerContainer: {
+  background: {
     flex: 1,
-    backgroundColor: "#d6f0f6",
+    width: "100%",
+    height: "112%",
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.11)", // ✅ semi-transparent overlay
     paddingHorizontal: isTablet ? 60 : isSmall ? 16 : 24,
     justifyContent: "center",
   },
   appTitle: {
     fontSize: isTablet ? 42 : isSmall ? 24 : 32,
     fontWeight: "900",
-    color: "#004e89",
+    color: "#ffffffff",
     alignSelf: "center",
     marginBottom: isSmall ? 20 : 30,
     textAlign: "center",
