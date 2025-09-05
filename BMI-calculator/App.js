@@ -10,15 +10,27 @@ import {
   Animated,
   Easing,
   ImageBackground,
+  SafeAreaView,
+  PixelRatio,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+
+// Responsive font scaling helper
+const responsiveFont = (size) => {
+  const scale = width / 375; // 375 is iPhone X base width
+  const newSize = size * scale;
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+};
+
+// Responsive spacing (for margins/paddings)
+const responsiveSize = (size) => Math.round((size * width) / 375);
 
 export default function BMICalculator() {
   const [age, setAge] = useState(25);
   const [weight, setWeight] = useState(60);
-  const [height, setHeight] = useState(170);
+  const [heightVal, setHeightVal] = useState(170);
   const [modalVisible, setModalVisible] = useState(false);
   const [bmi, setBmi] = useState(null);
   const [category, setCategory] = useState("");
@@ -44,7 +56,7 @@ export default function BMICalculator() {
   };
 
   const calculateBMI = () => {
-    const heightInMeters = height / 100;
+    const heightInMeters = heightVal / 100;
     const bmiValue = (weight / (heightInMeters * heightInMeters)).toFixed(1);
     setBmi(bmiValue);
 
@@ -65,7 +77,7 @@ export default function BMICalculator() {
       style={styles.bg}
       resizeMode="cover"
     >
-      <View style={styles.overlay}>
+      <SafeAreaView style={styles.overlay}>
         <Text style={styles.header}>BMI Calculator</Text>
         <Text style={styles.subtitle}>Check your Body Mass Index</Text>
 
@@ -76,11 +88,17 @@ export default function BMICalculator() {
             <Text style={styles.label}>Age</Text>
             <Text style={styles.value}>{age}</Text>
             <View style={styles.stepper}>
-              <Pressable onPress={() => setAge(Math.max(1, age - 1))} style={styles.stepBtn}>
-                <Icon name="remove" size={22} color="#333" />
+              <Pressable
+                onPress={() => setAge(Math.max(1, age - 1))}
+                style={styles.stepBtn}
+              >
+                <Icon name="remove" size={responsiveFont(20)} color="#333" />
               </Pressable>
-              <Pressable onPress={() => setAge(age + 1)} style={styles.stepBtn}>
-                <Icon name="add" size={22} color="#333" />
+              <Pressable
+                onPress={() => setAge(age + 1)}
+                style={styles.stepBtn}
+              >
+                <Icon name="add" size={responsiveFont(20)} color="#333" />
               </Pressable>
             </View>
           </View>
@@ -90,11 +108,17 @@ export default function BMICalculator() {
             <Text style={styles.label}>Weight (kg)</Text>
             <Text style={styles.value}>{weight}</Text>
             <View style={styles.stepper}>
-              <Pressable onPress={() => setWeight(Math.max(1, weight - 1))} style={styles.stepBtn}>
-                <Icon name="remove" size={22} color="#333" />
+              <Pressable
+                onPress={() => setWeight(Math.max(1, weight - 1))}
+                style={styles.stepBtn}
+              >
+                <Icon name="remove" size={responsiveFont(20)} color="#333" />
               </Pressable>
-              <Pressable onPress={() => setWeight(weight + 1)} style={styles.stepBtn}>
-                <Icon name="add" size={22} color="#333" />
+              <Pressable
+                onPress={() => setWeight(weight + 1)}
+                style={styles.stepBtn}
+              >
+                <Icon name="add" size={responsiveFont(20)} color="#333" />
               </Pressable>
             </View>
           </View>
@@ -103,13 +127,19 @@ export default function BMICalculator() {
         {/* Height Section */}
         <View style={styles.heightBox}>
           <Text style={styles.label}>Height (cm)</Text>
-          <Text style={styles.value}>{height}</Text>
+          <Text style={styles.value}>{heightVal}</Text>
           <View style={styles.stepper}>
-            <Pressable onPress={() => setHeight(Math.max(50, height - 1))} style={styles.stepBtn}>
-              <Icon name="remove" size={22} color="#333" />
+            <Pressable
+              onPress={() => setHeightVal(Math.max(50, heightVal - 1))}
+              style={styles.stepBtn}
+            >
+              <Icon name="remove" size={responsiveFont(20)} color="#333" />
             </Pressable>
-            <Pressable onPress={() => setHeight(height + 1)} style={styles.stepBtn}>
-              <Icon name="add" size={22} color="#333" />
+            <Pressable
+              onPress={() => setHeightVal(heightVal + 1)}
+              style={styles.stepBtn}
+            >
+              <Icon name="add" size={responsiveFont(20)} color="#333" />
             </Pressable>
           </View>
         </View>
@@ -122,7 +152,9 @@ export default function BMICalculator() {
         {/* Result Modal */}
         <Modal visible={modalVisible} transparent animationType="fade">
           <View style={styles.modalContainer}>
-            <Animated.View style={[styles.resultCard, { transform: [{ scale: scaleAnim }] }]}>
+            <Animated.View
+              style={[styles.resultCard, { transform: [{ scale: scaleAnim }] }]}
+            >
               <Text style={styles.resultTitle}>Your BMI</Text>
               <Text style={styles.resultValue}>{bmi}</Text>
               <Text style={styles.category}>{category}</Text>
@@ -133,70 +165,80 @@ export default function BMICalculator() {
             </Animated.View>
           </View>
         </Modal>
-      </View>
+      </SafeAreaView>
     </ImageBackground>
   );
 }
-
-const responsiveFont = size => Math.round((size * width) / 375);
 
 const styles = StyleSheet.create({
   bg: { flex: 1, width: "100%", height: "100%" },
   overlay: {
     flex: 1,
     alignItems: "center",
-    padding: 18,
-    paddingTop: 60,
+    padding: responsiveSize(18),
+    paddingTop: responsiveSize(40),
     backgroundColor: "rgba(255, 255, 255, 0.21)",
   },
   header: {
-    fontSize: responsiveFont(29),
+    fontSize: responsiveFont(28),
     fontWeight: "bold",
     color: "#002D72",
-    marginVertical: 16,
+    marginVertical: responsiveSize(14),
   },
-  subtitle: { fontSize: responsiveFont(15), color: "#333", marginBottom: 10 },
-  row: { flexDirection: "row", justifyContent: "space-between", width: "93%" },
+  subtitle: {
+    fontSize: responsiveFont(15),
+    color: "#333",
+    marginBottom: responsiveSize(10),
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "93%",
+  },
   box: {
     flex: 1,
-    margin: 10,
+    margin: responsiveSize(8),
     backgroundColor: "#fff",
-    padding: 16,
+    padding: responsiveSize(14),
     borderRadius: 18,
     alignItems: "center",
     elevation: 4,
   },
   label: { fontSize: responsiveFont(13), color: "#777" },
   value: {
-    fontSize: responsiveFont(27),
+    fontSize: responsiveFont(26),
     fontWeight: "bold",
     color: "#240975",
   },
-  stepper: { flexDirection: "row", marginTop: 8 },
+  stepper: { flexDirection: "row", marginTop: responsiveSize(6) },
   stepBtn: {
-    marginHorizontal: 10,
-    padding: 11,
+    marginHorizontal: responsiveSize(8),
+    padding: responsiveSize(10),
     backgroundColor: "#eee",
     borderRadius: 12,
   },
   heightBox: {
     backgroundColor: "#fff",
-    padding: 22,
+    padding: responsiveSize(20),
     borderRadius: 18,
     alignItems: "center",
     width: "93%",
-    marginVertical: 14,
+    marginVertical: responsiveSize(12),
     elevation: 4,
   },
   calcBtn: {
-    marginTop: 32,
+    marginTop: responsiveSize(28),
     backgroundColor: "#002D72",
-    padding: 16,
+    padding: responsiveSize(14),
     borderRadius: 13,
     width: "82%",
     alignItems: "center",
   },
-  calcText: { fontSize: responsiveFont(18), color: "#fff", fontWeight: "bold" },
+  calcText: {
+    fontSize: responsiveFont(17),
+    color: "#fff",
+    fontWeight: "bold",
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -207,24 +249,36 @@ const styles = StyleSheet.create({
     width: "86%",
     backgroundColor: "#f9fff9",
     borderRadius: 21,
-    padding: 24,
+    padding: responsiveSize(20),
     alignItems: "center",
   },
-  resultTitle: { fontSize: responsiveFont(19), marginBottom: 7, color: "#275D5A" },
+  resultTitle: {
+    fontSize: responsiveFont(18),
+    marginBottom: responsiveSize(6),
+    color: "#275D5A",
+  },
   resultValue: {
-    fontSize: responsiveFont(44),
+    fontSize: responsiveFont(42),
     fontWeight: "bold",
     color: "#122947",
   },
-  category: { fontSize: responsiveFont(18), fontWeight: "600", marginBottom: 13 },
-  range: { fontSize: responsiveFont(16), color: "#0c0b0b", marginBottom: 9 },
+  category: {
+    fontSize: responsiveFont(17),
+    fontWeight: "600",
+    marginBottom: responsiveSize(12),
+  },
+  range: { fontSize: responsiveFont(15), color: "#0c0b0b", marginBottom: 8 },
   closeBtn: {
-    marginTop: 17,
+    marginTop: responsiveSize(15),
     backgroundColor: "#32CD32",
-    padding: 13,
+    padding: responsiveSize(12),
     borderRadius: 12,
     width: "75%",
     alignItems: "center",
   },
-  closeText: { fontSize: responsiveFont(18), color: "#fff", fontWeight: "bold" },
+  closeText: {
+    fontSize: responsiveFont(17),
+    color: "#fff",
+    fontWeight: "bold",
+  },
 });
