@@ -92,7 +92,7 @@ export default function TodoListApp() {
   });
 
   return (
-    <ImageBackground source={backgroundImage} style={styles.bg}>
+    <ImageBackground source={backgroundImage} style={styles.bg} blurRadius={2}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -205,23 +205,23 @@ const AnimatedTaskItem = ({ task, toggleDone, deleteTask }) => {
 const styles = StyleSheet.create({
   bg: {
     flex: 1,
-    width: "100%",
-    height: "100%",
+    width:"100%",
+    height:"100%",
   },
   container: {
     flex: 1,
     paddingTop: 58,
     paddingHorizontal: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.27)',
+    backgroundColor: 'rgba(255, 255, 255, 0)',
   },
   title: {
-    color: '#06345a',
+    color: '#f8f8f8ff',
     fontSize: width > 380 ? 36 : 30,
     fontWeight: '900',
     textAlign: 'center',
     marginBottom: 32,
     letterSpacing: 2,
-    textShadowColor: '#97e0f6',
+    textShadowColor: '#2e2e9dff',
     textShadowOffset: { width: 1, height: 2 },
     textShadowRadius: 5,
   },
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     marginTop: 90,
-    textShadowColor: '#000000ff',
+    textShadowColor: '#7db9e1',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
   },
