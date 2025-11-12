@@ -1,0 +1,498 @@
+//bmi
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+
+const BMICalculator: React.FC = () => {
+  const [height, setHeight] = useState<string>('');
+  const [weight, setWeight] = useState<string>('');
+  const [bmi, setBMI] = useState<string | null>(null);
+
+  const calculateBMI = () => {
+    const parsedHeight = parseFloat(height);
+    const parsedWeight = parseFloat(weight);
+    if (!parsedHeight || !parsedWeight) {
+      setBMI(null);
+      return;
+    }
+    const heightMeters = parsedHeight / 100;
+    const bmiValue = parsedWeight / (heightMeters * heightMeters);
+    setBMI(bmiValue.toFixed(2));
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>BMI Calculator</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Height (cm)"
+        keyboardType="numeric"
+        value={height}
+        onChangeText={setHeight}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Weight (kg)"
+        keyboardType="numeric"
+        value={weight}
+        onChangeText={setWeight}
+      />
+      <View style={styles.button}>
+        <Button title="Calculate BMI" onPress={calculateBMI} />
+      </View>
+      {bmi && <Text style={styles.result}>Your BMI: {bmi}</Text>}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#fff' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 30 },
+  input: {
+    height: 44,
+    width: 220,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 6,
+    marginBottom: 18,
+    paddingHorizontal: 12,
+    fontSize: 16,
+  },
+  button: { width: 200, marginBottom: 18 },
+  result: { fontSize: 18, fontWeight: 'bold', marginTop: 20 },
+});
+
+export default BMICalculator;
+
+//expense
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+
+type Expense = { label: string; amount: number };
+
+const labelOptions = [
+  'Food',
+  'Transport',
+  'Shopping',
+  'Entertainment',
+  'Recharge',
+  'Other'
+];
+
+export default function App() {
+  const [label, setLabel] = useState(labelOptions[0]);
+  const [amount, setAmount] = useState('');
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+
+  const addExpense = () => {
+    if (amount) {
+      setExpenses([...expenses, { label, amount: parseFloat(amount) }]);
+      setAmount('');
+    }
+  };
+
+  const total = expenses.reduce((sum, item) => sum + item.amount, 0);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Expense Manager</Text>
+      <Picker
+        selectedValue={label}
+        style={styles.picker}
+        onValueChange={(itemValue) => setLabel(itemValue)}
+      >
+        {labelOptions.map((option) => (
+          <Picker.Item label={option} value={option} key={option} />
+        ))}
+      </Picker>
+      <TextInput
+        style={styles.input}
+        placeholder="Amount"
+        keyboardType="numeric"
+        value={amount}
+        onChangeText={setAmount}
+      />
+      <Button title="Add Expense" onPress={addExpense} />
+      <Text style={styles.total}>Total: ₹{total.toFixed(2)}</Text>
+      <FlatList
+        data={expenses}
+        keyExtractor={(_, idx) => idx.toString()}
+        style={styles.list}
+        ListEmptyComponent={<Text style={styles.empty}>No expenses yet</Text>}
+        renderItem={({ item, index }) => (
+          <View style={styles.card}>
+            <Text style={styles.cardLabel}>{item.label}</Text>
+            <Text style={styles.cardAmount}>₹{item.amount.toFixed(2)}</Text>
+          </View>
+        )}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 24, marginTop: 24 },
+  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 18, textAlign: 'center' },
+  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 5, height: 40, marginVertical: 6, paddingHorizontal: 10 },
+  picker: { height: 48, width: '100%', marginBottom: 8 },
+  total: { marginTop: 18, fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
+  list: { marginTop: 12 },
+  card: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#f7f7fa', padding: 12, borderRadius: 6, marginBottom: 8, borderWidth: 1, borderColor: '#e0e0e0' },
+  cardLabel: { fontWeight: 'bold', fontSize: 16 },
+  cardAmount: { fontSize: 16, color: '#007b55' },
+  empty: { textAlign: 'center', marginTop: 24, color: '#aaa' },
+});
+
+//todo
+
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+
+type Task = {
+  id: string;
+  text: string;
+};
+
+export default function ToDoApp() {
+  const [task, setTask] = useState('');
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  const addTask = () => {
+    if (task.trim()) {
+      setTasks([...tasks, { id: Date.now().toString(), text: task.trim() }]);
+      setTask('');
+    }
+  };
+
+  const removeTask = (id: string) => {
+    setTasks(tasks.filter((t) => t.id !== id));
+  };
+
+  const renderItem = ({ item }: { item: Task }) => (
+    <View style={styles.card}>
+      <Text style={styles.taskText}>{item.text}</Text>
+      <TouchableOpacity style={styles.deleteBtn} onPress={() => removeTask(item.id)}>
+        <Text style={styles.deleteBtnText}>Delete</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>To-Do List</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter task"
+        value={task}
+        onChangeText={setTask}
+      />
+      <Button title="Add Task" onPress={addTask} />
+      <FlatList
+        style={styles.list}
+        data={tasks}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        ListEmptyComponent={<Text style={styles.empty}>No tasks added</Text>}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, marginTop: 24, backgroundColor: '#fff' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
+  input: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    height: 40,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    fontSize: 16,
+  },
+  list: { marginTop: 8 },
+  card: {
+    backgroundColor: '#f9f9f9',
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { height: 1, width: 0 },
+    shadowRadius: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  taskText: {
+    fontSize: 18,
+    color: '#333',
+    flexShrink: 1,
+  },
+  deleteBtn: {
+    backgroundColor: '#e74c3c',
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  deleteBtnText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  empty: {
+    textAlign: 'center',
+    marginTop: 16,
+    color: '#999',
+  },
+});
+
+//convert        npx expo install @react-native-picker/picker
+
+import React, { useState } from "react";
+import { View, Text, TextInput, StyleSheet } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+
+const conversions = {
+  "Kilometers to Miles": { func: (v: number) => v * 0.621371, fromUnit: "km", toUnit: "mi" },
+  "Miles to Kilometers": { func: (v: number) => v / 0.621371, fromUnit: "mi", toUnit: "km" },
+};
+
+export default function ScientificConverter() {
+  const [inputValue, setInputValue] = useState("");
+  const [selectedConversion, setSelectedConversion] = useState("Kilometers to Miles");
+
+  const numericValue = parseFloat(inputValue);
+  const currentConversion = conversions[selectedConversion];
+  const result = !isNaN(numericValue)
+    ? currentConversion.func(numericValue).toFixed(2)
+    : "";
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Unit Conversion</Text>
+      
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>{`Enter value (${currentConversion.fromUnit})`}</Text>
+        <TextInput
+          style={styles.input}
+          placeholder={`e.g., 10`}
+          placeholderTextColor="#999"
+          keyboardType="numeric"
+          value={inputValue}
+          onChangeText={setInputValue}
+        />
+      </View>
+      
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedConversion}
+          style={styles.picker}
+          onValueChange={(itemValue) => setSelectedConversion(itemValue)}
+        >
+          {Object.keys(conversions).map((key) => (
+            <Picker.Item key={key} label={key} value={key} />
+          ))}
+        </Picker>
+      </View>
+      
+      <View style={styles.resultContainer}>
+        <Text style={styles.resultLabel}>Result</Text>
+        <Text style={styles.resultValue}>
+          {result} {currentConversion.toUnit}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: "#f0f4f8",
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 24,
+    color: "#333",
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: "#555",
+  },
+  input: {
+    height: 50,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 18,
+    backgroundColor: "#fff",
+  },
+  pickerContainer: {
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 20,
+    overflow: "hidden",
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+  },
+  resultContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  resultLabel: {
+    fontSize: 20,
+    marginBottom: 10,
+    color: "#555",
+  },
+  resultValue: {
+    fontSize: 26,
+    fontWeight: "700",
+    color: "#222",
+  },
+});
+
+ANDROID_HOME C:\Users\Lenovo\AppData\Local\Android\Sdk
+
+ANDROID SDK_ROOT C:\Users\Lenovo\AppData\Local\Android\Sdk
+
+JAVA_HOME C:\Program Files\Java\jdk-21\bin
+
+PATH C:\Program Files\gradle-9.2.0\bin
+
+npm install -g cordova
+
+cordova create myApp com.myCompany.myApp myApp
+ cd myApp
+
+cordova create hello com.example.hello HelloWorld
+cd hello
+cordova platform add android
+cordova build
+cordova run android
+
+//login 
+
+//html 
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<title>User Login</title>
+<link rel="stylesheet" type="text/css" href="css/index.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="img/headerimage.png" alt="Header Image" />
+      <h1>Login</h1>
+    </header>
+    <div class="login-form">
+      <label for="username">Username</label>
+      <input type="text" id="username" required/>
+      <label for="password">Password</label>
+      <input type="password" id="password" required/>
+      <div class="buttons">
+        <button id="resetBtn">Reset</button>
+        <button id="submitBtn">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/index.js"></script>
+  <script src="cordova.js"></script>
+</body>
+</html>
+
+
+//js
+
+document.addEventListener('deviceready', function() {
+  document.getElementById('resetBtn').addEventListener('click', resetForm);
+  document.getElementById('submitBtn').addEventListener('click', submitForm);
+
+  function resetForm() {
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+  }
+
+  function submitForm() {
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+    if(username && password) {
+      alert('Username: ' + username + "\nPassword: " + password);
+    } else {
+      alert('Please fill both fields');
+    }
+  }
+});
+
+
+//location
+
+cordova plugin add cordova-plugin-geolocation
+
+//html
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Location App</title>
+  <script src="cordova.js"></script>
+</head>
+<body>
+  <div id="locationDisplay">Press the button to get location</div>
+  <button onclick="getLocation()">Get Location</button>
+
+  <script src="js/index.js"></script>
+</body>
+</html>
+
+//js
+
+function getLocation() {
+  navigator.geolocation.getCurrentPosition(onSuccess, onError);
+}
+
+function onSuccess(position) {
+  var lat = position.coords.latitude;
+  var long = position.coords.longitude;
+  document.getElementById('locationDisplay').innerHTML =
+    'Latitude: ' + lat + '<br>Longitude: ' + long;
+}
+
+function onError(error) {
+  alert('Error getting location: ' + error.message);
+}
